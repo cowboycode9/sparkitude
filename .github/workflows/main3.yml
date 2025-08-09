@@ -24,8 +24,27 @@ jobs:
     - name: Install dependencies
       run: pip install requests beautifulsoup4 edge-tts nest_asyncio pillow
     
-    - name: Create source directory
-      run: mkdir -p source
+    - name: Create source directory and clean old files
+      run: |
+        mkdir -p source
+        echo "Checking for existing files to replace..."
+        if [ -f "source/headline.txt" ]; then
+          echo "Removing existing headline.txt"
+          rm "source/headline.txt"
+        fi
+        if [ -f "source/script.txt" ]; then
+          echo "Removing existing script.txt"
+          rm "source/script.txt"
+        fi
+        if [ -f "source/image.jpg" ]; then
+          echo "Removing existing image.jpg"
+          rm "source/image.jpg"
+        fi
+        if [ -f "source/voiceover.mp3" ]; then
+          echo "Removing existing voiceover.mp3"
+          rm "source/voiceover.mp3"
+        fi
+        echo "Ready to generate new files..."
     
     - name: Generate TikTok Script and files
       run: |
@@ -174,96 +193,6 @@ jobs:
             with open('source/script.txt', 'w', encoding='utf-8') as f:
                 f.write(script)
             print('✅ Script saved to source/script.txt')
-
-            # Download and save image
-            image_saved = download_image(img_url, 'source/image.jpg')
-            if image_saved:
-                print('✅ Image saved to source/image.jpg')
-            else:
-                print('⚠️ Image could not be saved')
-
-            # Generate TTS voiceover
-            print()
-            print('🔊 Generating voiceover MP3 with Edge TTS...')
-            await save_script_to_voice(script, voice='en-US-GuyNeural', output_path='source/voiceover.mp3')
-            print('✅ Voiceover saved to source/voiceover.mp3')
-
-        # Run script
-        asyncio.run(main())
-        EOF
-
-    - name: Set up Git identity
-      run: |
-        git config --global user.name "cowboycode9"
-        git config --global user.email "cowboycode9@outlook.com"
-
-    - name: Commit and push generated files
-      env:
-        GH_PAT: ${{ secrets.GH_PAT }}
-      run: |
-        git stash --include-untracked
-        git pull origin main --rebase || echo "Warning: rebase skipped"
-        git stash pop || true
-
-        git add source/
-        timestamp=$(TZ="UTC" date +"%Y-%m-%d %H:%M:%S UTC")
-        git commit -m "Generated TikTok NBA script and assets: ${timestamp}" || echo "No changes to commit"
-        git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git HEAD:main                return f'Error: {str(e)}'
-
-        # Download and save image
-        def download_image(img_url, output_path):
-            try:
-                if img_url == 'No image found':
-                    return False
-                
-                headers = {'User-Agent': 'Mozilla/5.0'}
-                response = requests.get(img_url, headers=headers)
-                response.raise_for_status()
-                
-                # Open and save image as JPG
-                image = Image.open(io.BytesIO(response.content))
-                # Convert to RGB if necessary (for JPG format)
-                if image.mode in ('RGBA', 'P'):
-                    image = image.convert('RGB')
-                image.save(output_path, 'JPEG', quality=90)
-                return True
-            except Exception as e:
-                print(f'Error downloading image: {e}')
-                return False
-
-        # Save to MP3 with Edge TTS
-        async def save_script_to_voice(script_text, voice='en-US-GuyNeural', output_path='source/voiceover.mp3'):
-            communicate = edge_tts.Communicate(script_text, voice)
-            await communicate.save(output_path)
-
-        # Main function
-        async def main():
-            url = 'https://www.basketballinsiders.org/news/nba-offseason-grades-knicks-rockets-celtics-cavaliers-thunder/'
-            headline, article_content, img_url = scrape_nba_news(url)
-
-            if not headline:
-                print('❌ Failed to scrape article.')
-                return
-
-            print(f'📰 Headline: {headline}')
-            print()
-
-            script = generate_tiktok_script(headline, article_content)
-            print('🎬 TTS-Friendly TikTok Voiceover Script:')
-            print()
-            print(script)
-            print()
-            print(f'🖼️ Image URL: {img_url}')
-
-            # Save headline to file
-            with open('source/headline.txt', 'w', encoding='utf-8') as f:
-                f.write(headline)
-            print('✅ Headline saved to source/headline.txt')
-
-            # Save article content to file
-            with open('source/article.txt', 'w', encoding='utf-8') as f:
-                f.write(article_content)
-            print('✅ Article saved to source/article.txt')
 
             # Download and save image
             image_saved = download_image(img_url, 'source/image.jpg')
