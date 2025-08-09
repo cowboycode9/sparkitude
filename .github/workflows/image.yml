@@ -1,0 +1,391 @@
+name: TikTok Visual Finder
+
+on:
+  workflow_dispatch:  # Manual trigger
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+
+jobs:
+  generate-visuals:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GH_PAT }}
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        pip install duckduckgo-search requests pillow
+
+    - name: Ensure images subdirectory exists
+      run: |
+        mkdir -p edit/images
+
+    - name: Run TikTok Visual Finder
+      run: |
+        cat > tiktok_finder.py << 'EOF'
+        # TikTok Script Visual Finder - GitHub Actions Edition
+        import re
+        import requests
+        from duckduckgo_search import DDGS
+        import json
+        import time
+        from PIL import Image as PILImage
+        import io
+        import os
+
+        # Pollinations AI API configuration
+        POLLINATIONS_URL = "https://text.pollinations.ai/openai"
+
+        def split_script_into_phrases(script_text):
+            """Split script into individual phrases by commas and periods"""
+            script_clean = script_text.strip()
+            phrases = []
+            current_phrase = ""
+            
+            for char in script_clean:
+                current_phrase += char
+                if char in [',', '.'] and len(current_phrase.strip()) > 15:
+                    phrase = current_phrase.strip().rstrip(',.')
+                    if len(phrase) > 10:
+                        phrases.append(phrase)
+                    current_phrase = ""
+            
+            if current_phrase.strip() and len(current_phrase.strip()) > 10:
+                phrases.append(current_phrase.strip())
+            
+            return phrases
+
+        def generate_keywords_for_phrase(phrase):
+            """Uses Pollinations AI to generate keywords for a single phrase"""
+            prompt = f"""
+        Generate 2-3 specific image search keywords for this NBA TikTok script phrase. Focus on visual elements that would make good video content.
+
+        RULES:
+        - Generate specific NBA-related keywords
+        - Include team names, player names, or NBA concepts when mentioned
+        - If no specific NBA content, create general basketball/sports keywords
+        - Keywords should find relevant sports images
+        - Keep keywords short and searchable
+
+        PHRASE: "{phrase}"
+
+        Respond with ONLY the keywords separated by commas (no extra text):
+        """
+            
+            headers = {"Content-Type": "application/json"}
+            data = {
+                "model": "openai",
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 100,
+                "temperature": 0.7
+            }
+            
+            try:
+                response = requests.post(POLLINATIONS_URL, headers=headers, json=data, timeout=15)
+                if response.status_code == 200:
+                    result = response.json()
+                    keywords_text = result['choices'][0]['message']['content'].strip()
+                    keywords = [k.strip() for k in keywords_text.split(',') if k.strip()]
+                    return keywords[:3]
+                else:
+                    return generate_fallback_keywords(phrase)
+            except Exception as e:
+                print(f"⚠️ API error for phrase, using fallback: {e}")
+                return generate_fallback_keywords(phrase)
+
+        def generate_fallback_keywords(phrase):
+            """Generate fallback keywords when API fails"""
+            phrase_lower = phrase.lower()
+            keywords = []
+            
+            # Check for team names
+            teams = ['knicks', 'rockets', 'celtics', 'cavaliers', 'thunder', 'lakers', 'warriors']
+            for team in teams:
+                if team in phrase_lower:
+                    keywords.append(f"NBA {team}")
+                    break
+            
+            # Check for player names
+            players = ['durant', 'clarkson', 'yabusele', 'brunson', 'towns', 'holiday', 'porzingis', 'holmgren']
+            for player in players:
+                if player in phrase_lower:
+                    keywords.append(f"{player} NBA player")
+                    break
+            
+            # Add generic keywords
+            if 'trade' in phrase_lower or 'signing' in phrase_lower:
+                keywords.append('NBA trade news')
+            elif 'grade' in phrase_lower or 'offseason' in phrase_lower:
+                keywords.append('NBA offseason')
+            else:
+                keywords.append('NBA basketball')
+            
+            while len(keywords) < 2:
+                keywords.append('NBA game')
+            
+            return keywords[:3]
+
+        def search_images_for_keyword(keyword, max_results=3, max_retries=3):
+            """Search images using DuckDuckGo with rate limiting and retry logic"""
+            for attempt in range(max_retries):
+                try:
+                    print(f"🔍 Attempt {attempt + 1}: Searching for '{keyword}'...")
+                    
+                    with DDGS() as ddgs:
+                        results = list(ddgs.images(keyword, max_results=max_results))
+                        
+                    if results:
+                        print(f"✅ Found {len(results)} images")
+                        return results
+                    else:
+                        print("⚠️ No results found, but no error")
+                        
+                except Exception as e:
+                    error_msg = str(e).lower()
+                    
+                    if "202" in error_msg or "rate" in error_msg:
+                        wait_time = (attempt + 1) * 10
+                        print(f"⏳ Rate limited. Waiting {wait_time} seconds before retry {attempt + 1}/{max_retries}...")
+                        time.sleep(wait_time)
+                    else:
+                        print(f"❌ Error searching for '{keyword}': {e}")
+                        break
+            
+            print(f"❌ Failed to get images for '{keyword}' after {max_retries} attempts")
+            return []
+
+        def download_and_save_image(img_url, filename, max_retries=3):
+            """Download image from URL and save with specific filename"""
+            for attempt in range(max_retries):
+                try:
+                    user_agents = [
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                    ]
+                    
+                    headers = {
+                        'User-Agent': user_agents[attempt % len(user_agents)],
+                        'Referer': 'https://www.google.com/',
+                        'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+                        'Accept-Language': 'en-US,en;q=0.9',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'Connection': 'keep-alive',
+                        'Upgrade-Insecure-Requests': '1',
+                    }
+                    
+                    response = requests.get(img_url, headers=headers, timeout=15, stream=True)
+                    response.raise_for_status()
+                    
+                    content_type = response.headers.get('content-type', '').lower()
+                    if 'image' not in content_type:
+                        print(f"⚠️ URL doesn't return image content: {content_type}")
+                        continue
+                    
+                    img_data = response.content
+                    if len(img_data) < 1000:
+                        print(f"⚠️ Image too small ({len(img_data)} bytes), skipping")
+                        continue
+                    
+                    pil_img = PILImage.open(io.BytesIO(img_data))
+                    
+                    if pil_img.mode in ('RGBA', 'P'):
+                        pil_img = pil_img.convert('RGB')
+                    
+                    pil_img.save(filename, 'JPEG', quality=90)
+                    print(f"✅ Saved: {filename}")
+                    return True
+                    
+                except requests.exceptions.HTTPError as e:
+                    if e.response.status_code == 403:
+                        print(f"⚠️ Attempt {attempt + 1}: Access forbidden (403)")
+                    elif e.response.status_code == 404:
+                        print(f"⚠️ Attempt {attempt + 1}: Image not found (404)")
+                        break
+                    else:
+                        print(f"⚠️ Attempt {attempt + 1}: HTTP error {e.response.status_code}")
+                except Exception as e:
+                    print(f"⚠️ Attempt {attempt + 1} failed to download {filename}: {e}")
+                
+                if attempt < max_retries - 1:
+                    time.sleep(2 * (attempt + 1))
+            
+            print(f"❌ Failed to download {filename} after {max_retries} attempts")
+            return False
+
+        def save_json_data(phrases_data, filename="edit/tiktok_script_data.json"):
+            """Save phrases data to JSON file"""
+            try:
+                with open(filename, 'w', encoding='utf-8') as f:
+                    json.dump(phrases_data, f, indent=2, ensure_ascii=False)
+                print(f"✅ JSON data saved to: {filename}")
+                return True
+            except Exception as e:
+                print(f"❌ Failed to save JSON: {e}")
+                return False
+
+        def main():
+            # Your TikTok script
+            script = """
+            Alright NBA fans, let's dive into these offseason grades, starting with the Knicks, they added Clarkson and Yabusele, which gives them some much needed scoring punch and frontcourt depth, and that is a B minus in my book, but the real story is how coach Mike Brown will transform their offense and use that depth to push them higher, so it's a big moment for him and for Jalen Brunson and Karl-Anthony Towns, they're both looking at some legacy defining years ahead, the Knicks are definitely on the rise, next up the Rockets, bringing in Durant, Finney-Smith, Capela and Okogie, that's a serious upgrade to their scoring and defense, losing Green and Brooks makes sense given their inefficiency, and grabbing Durant is a massive win, but I do wonder if they should've spent that money on more shooting guards, still I give the Rockets an A for their bold moves and talent boost, now the Celtics, oh man, losing Holiday, Porzingis and Kornet really hurts, especially with Tatum injured, they were looking to move Simons too, which shows how much they're shifting gears, they saved around 200 million in tax, so I get their focus on minimizing costs, but it's a tough season coming, and that's a B for me, Cleveland, they stayed calm and made smart moves with Lonzo and Nance, focusing on size and health, they're not overreacting to that playoff exit, and that's a good approach, I'd give them a B too, finally the Thunder, they kept their core locked in, Gilgeous-Alexander, Williams, Holmgren, and that's huge for their future, Holmgren's extension is promising but he's gotta stay healthy, so I'd say they're solid with a B, and overall I think these teams played it smart, calculated, and ready to compete next season, so what team do you think made the biggest leap this summer
+            """
+            
+            print("🎬 TikTok Script Visual Finder - GitHub Actions Edition")
+            print("="*65)
+            
+            # Step 1: Split script into individual phrases
+            print("\n📝 Splitting script into individual phrases...")
+            phrases = split_script_into_phrases(script.strip())
+            
+            print(f"✅ Found {len(phrases)} phrases to visualize!")
+            print("📋 All phrases:")
+            for i, phrase in enumerate(phrases, 1):
+                print(f"  {i:2d}. {phrase[:60]}{'...' if len(phrase) > 60 else ''}")
+            
+            # Initialize JSON data structure
+            json_data = []
+            
+            # Step 2: Process each phrase individually
+            print(f"\n🔍 Generating keywords and searching images for EVERY phrase...")
+            print("="*65)
+            
+            for i, phrase in enumerate(phrases, 1):
+                phrase_id = f"p{i}"
+                print(f"\n📖 Phrase {i}/{len(phrases)} (ID: {phrase_id}): {phrase}")
+                
+                # Generate keywords for this specific phrase
+                print("🤖 Generating keywords...")
+                keywords = generate_keywords_for_phrase(phrase)
+                primary_keyword = keywords[0] if keywords else phrase[:30]
+                
+                print(f"🔑 Primary Keyword: {primary_keyword}")
+                print(f"🔑 All Keywords: {', '.join(keywords)}")
+                print("-" * 55)
+                
+                # Initialize phrase data for JSON
+                phrase_data = {
+                    "id": phrase_id,
+                    "phrase": phrase,
+                    "keyword": primary_keyword,
+                    "images": []
+                }
+                
+                # Search for images using the first keyword
+                images = search_images_for_keyword(primary_keyword, max_results=2)
+                
+                if images:
+                    for j, img_result in enumerate(images):
+                        img_url = img_result.get("image", "")
+                        img_title = img_result.get("title", "No title")
+                        
+                        # Create filename in format: p1_img1.jpg, p1_img2.jpg
+                        img_filename = f"{phrase_id}_img{j+1}.jpg"
+                        img_filepath = os.path.join("edit/images", img_filename)
+                        
+                        print(f"\n🖼️ Image {j+1}: {img_title}")
+                        print(f"📱 URL: {img_url}")
+                        print(f"💾 Saving as: {img_filename}")
+                        
+                        # Download and save image
+                        success = download_and_save_image(img_url, img_filepath)
+                        
+                        if success:
+                            phrase_data["images"].append(f"images/{img_filename}")
+                            print("✅ Image saved and added to JSON")
+                        else:
+                            print("❌ Failed to save image")
+                        
+                        time.sleep(1)  # Delay between image downloads
+                        
+                else:
+                    print("❌ No images found for primary keyword")
+                    # Try with second keyword as backup
+                    if len(keywords) > 1:
+                        backup_keyword = keywords[1]
+                        print(f"🔄 Trying backup keyword: '{backup_keyword}'")
+                        time.sleep(5)
+                        
+                        backup_images = search_images_for_keyword(backup_keyword, max_results=1)
+                        if backup_images:
+                            img_result = backup_images[0]
+                            img_url = img_result.get("image", "")
+                            img_title = img_result.get("title", "No title")
+                            
+                            img_filename = f"{phrase_id}_img1.jpg"
+                            img_filepath = os.path.join("edit/images", img_filename)
+                            
+                            print(f"🖼️ Backup Image: {img_title}")
+                            print(f"💾 Saving as: {img_filename}")
+                            
+                            success = download_and_save_image(img_url, img_filepath)
+                            if success:
+                                phrase_data["images"].append(f"images/{img_filename}")
+                                phrase_data["keyword"] = backup_keyword
+                                print("✅ Backup image saved")
+                        else:
+                            print("❌ Backup search also failed")
+                
+                # Add phrase data to JSON structure
+                json_data.append(phrase_data)
+                
+                print("\n" + "="*65)
+                
+                # Dynamic delay between phrases
+                phrase_delay = min(15, max(5, len(phrases) // 3))
+                print(f"⏳ Waiting {phrase_delay} seconds before next phrase...")
+                time.sleep(phrase_delay)
+            
+            # Step 3: Save JSON data
+            print(f"\n💾 Saving JSON data...")
+            json_success = save_json_data(json_data, "edit/tiktok_script_data.json")
+            
+            # Summary
+            print(f"\n🎉 Processing complete!")
+            print(f"📊 Processed: {len(phrases)} phrases")
+            print(f"🖼️ Downloaded images saved in: edit/images/")
+            print(f"📄 JSON data: {'✅ Saved' if json_success else '❌ Failed'}")
+            
+            total_images = sum(len(p["images"]) for p in json_data)
+            print(f"📈 Total images downloaded: {total_images}")
+            
+            # Display JSON structure preview
+            print(f"\n📋 JSON Structure Preview:")
+            print(json.dumps(json_data[:2], indent=2))
+            if len(json_data) > 2:
+                print("... (and more)")
+            
+            return json_data
+
+        if __name__ == "__main__":
+            print("🚀 Starting TikTok Visual Finder in GitHub Actions...")
+            main()
+        EOF
+        
+        python tiktok_finder.py
+
+    - name: Set up Git identity
+      run: |
+        git config --global user.name "cowboycode9"
+        git config --global user.email "cowboycode9@outlook.com"
+
+    - name: Commit and push generated files
+      env:
+        GH_PAT: ${{ secrets.GH_PAT }}
+      run: |
+        git stash --include-untracked || true
+        git pull origin main --rebase || echo "Warning: rebase skipped"
+        git stash pop || true
+
+        git add edit/
+        timestamp=$(TZ="UTC" date +"%Y-%m-%d %H:%M:%S UTC")
+        git commit -m "Generated TikTok NBA script and assets: ${timestamp}" || echo "No changes to commit"
+        git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git HEAD:main
