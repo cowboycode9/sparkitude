@@ -1,7 +1,7 @@
 name: TikTok NBA Script Generator
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Allows manual triggering
   schedule:
     - cron: '0 12 * * *'  # Run daily at 12 PM UTC
 
@@ -16,164 +16,134 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: '3.10'
     
     - name: Install dependencies
-      run: |
-        pip install requests beautifulsoup4 edge-tts nest_asyncio
+      run: pip install requests beautifulsoup4 edge-tts nest_asyncio
     
-    - name: Create Python script
+    - name: Generate TikTok Script using embedded script
       run: |
-        cat > tiktok_generator.py << 'EOF'
-import requests
-from bs4 import BeautifulSoup
-import json
-import asyncio
-import edge_tts
-import nest_asyncio
+        python3 - <<EOF
+        import requests
+        from bs4 import BeautifulSoup
+        import json
+        import asyncio
+        import edge_tts
+        import nest_asyncio
 
-# Allow async in some environments like notebooks
-nest_asyncio.apply()
+        # Allow async in some environments like notebooks
+        nest_asyncio.apply()
 
-# API configuration
-POLLINATIONS_URL = 'https://text.pollinations.ai/openai'
+        # API configuration
+        POLLINATIONS_URL = 'https://text.pollinations.ai/openai'
 
-# Scraper for NBA article
-def scrape_nba_news(url):
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    try:
-        response = requests.get(url, headers=headers)
-        soup = BeautifulSoup(response.text, 'html.parser')
+        # Scraper for NBA article
+        def scrape_nba_news(url):
+            headers = {'User-Agent': 'Mozilla/5.0'}
+            try:
+                response = requests.get(url, headers=headers)
+                soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Headline
-        h1 = soup.find('header', class_='entry-header')
-        headline = h1.find('h1').get_text(strip=True) if h1 else 'No headline found'
+                # Headline
+                h1 = soup.find('header', class_='entry-header')
+                headline = h1.find('h1').get_text(strip=True) if h1 else 'No headline found'
 
-        # Article content
-        content_div = soup.find('div', class_='entry-content')
-        article_text = content_div.get_text(separator=' ', strip=True) if content_div else 'No content found'
+                # Article content
+                content_div = soup.find('div', class_='entry-content')
+                article_text = content_div.get_text(separator=' ', strip=True) if content_div else 'No content found'
 
-        # Image URL
-        og_image = soup.find('meta', property='og:image')
-        img_url = og_image['content'] if og_image and og_image.has_attr('content') else 'No image found'
+                # Image URL
+                og_image = soup.find('meta', property='og:image')
+                img_url = og_image['content'] if og_image and og_image.has_attr('content') else 'No image found'
 
-        return headline, article_text, img_url
-    except Exception:
-        return None, None, None
+                return headline, article_text, img_url
+            except Exception:
+                return None, None, None
 
-# AI generation for TTS-friendly script
-def generate_tiktok_script(headline, article_content):
-    prompt = f'''
-You are writing a TikTok NBA commentary script for a text-to-speech voice.
+        # AI generation for TTS-friendly script
+        def generate_tiktok_script(headline, article_content):
+            prompt = f"""
+        You are writing a TikTok NBA commentary script for a text-to-speech voice.
 
-CRITICAL TTS RULES for perfect natural speech:
-- Write like you are having an excited conversation with a friend
-- Add commas when you would naturally take a breath while speaking
-- Use commas to separate different thoughts or topics
-- Add commas after team names when transitioning to what they did
-- Put commas before \"but\", \"and\", \"so\" when connecting major ideas
-- Do not overdo it - aim for 2-4 word groups between most commas
-- NO periods, colons, dashes, or any punctuation except commas and ONE period at the very end
-- Instead of \"grade: B\" say \"I give them a B\" or \"that is a solid B grade\"
-- NO symbols like colons, dashes, hyphens - only words and commas
-- Sound enthusiastic and natural, not robotic or rushed
-- Be under 60 seconds when spoken
+        CRITICAL TTS RULES for perfect natural speech:
+        - Write like you are having an excited conversation with a friend
+        - Add commas when you would naturally take a breath while speaking
+        - Use commas to separate different thoughts or topics
+        - Add commas after team names when transitioning to what they did
+        - Put commas before "but", "and", "so" when connecting major ideas
+        - Do not overdo it - aim for 2-4 word groups between most commas
+        - NO periods, colons, dashes, or any punctuation except commas and ONE period at the very end
+        - Instead of "grade: B" say "I give them a B" or "that is a solid B grade"
+        - NO symbols like colons, dashes, hyphens - only words and commas
+        - Sound enthusiastic and natural, not robotic or rushed
+        - Be under 60 seconds when spoken
 
-PERFECT EXAMPLE (natural speech with grades):
-\"Alright NBA fans, let us talk offseason moves, the Lakers made some crazy trades, adding new talent and depth, and honestly I give them a solid B for effort, then you got the Warriors who stayed quiet, keeping their core together, and that is an A grade move in my book, so which approach do you prefer\"
+        PERFECT EXAMPLE (natural speech with grades):
+        "Alright NBA fans, let us talk offseason moves, the Lakers made some crazy trades, adding new talent and depth, and honestly I give them a solid B for effort, then you got the Warriors who stayed quiet, keeping their core together, and that is an A grade move in my book, so which approach do you prefer"
 
-NBA Headline: {headline}
+        NBA Headline: {headline}
 
-Article Info: {article_content}
+        Article Info: {article_content}
 
-Write with natural speech rhythm and spell out grades naturally. NO colons, dashes, or symbols - just words and commas. Output just the script.
-'''
+        Write with natural speech rhythm and spell out grades naturally. NO colons, dashes, or symbols - just words and commas. Output just the script.
+        """
 
-    headers = {
-        'Content-Type': 'application/json'
-    }
+            headers = {
+                'Content-Type': 'application/json'
+            }
 
-    data = {
-        'model': 'openai',
-        'messages': [{'role': 'user', 'content': prompt}],
-        'max_tokens': 380,
-        'temperature': 0.9,
-        'top_p': 0.95
-    }
+            data = {
+                'model': 'openai',
+                'messages': [{'role': 'user', 'content': prompt}],
+                'max_tokens': 380,
+                'temperature': 0.9,
+                'top_p': 0.95
+            }
 
-    try:
-        response = requests.post(POLLINATIONS_URL, headers=headers, json=data)
-        if response.status_code == 200:
-            result = response.json()
-            choice = result['choices'][0]
-            return choice['message']['content'].strip()
-        else:
-            return f'API Error {response.status_code}'
-    except Exception as e:
-        return f'Error: {str(e)}'
+            try:
+                response = requests.post(POLLINATIONS_URL, headers=headers, json=data)
+                if response.status_code == 200:
+                    result = response.json()
+                    choice = result['choices'][0]
+                    return choice['message']['content'].strip()
+                else:
+                    return f'API Error {response.status_code}'
+            except Exception as e:
+                return f'Error: {str(e)}'
 
-# Save to MP3 with Edge TTS
-async def save_script_to_voice(script_text, voice='en-US-GuyNeural', output_path='tiktok_script.mp3'):
-    communicate = edge_tts.Communicate(script_text, voice)
-    await communicate.save(output_path)
+        # Save to MP3 with Edge TTS
+        async def save_script_to_voice(script_text, voice='en-US-GuyNeural', output_path='tiktok_script.mp3'):
+            communicate = edge_tts.Communicate(script_text, voice)
+            await communicate.save(output_path)
 
-# Main function
-async def main():
-    url = 'https://www.basketballinsiders.org/news/nba-offseason-grades-knicks-rockets-celtics-cavaliers-thunder/'
-    headline, article_content, img_url = scrape_nba_news(url)
+        # Main function
+        async def main():
+            url = 'https://www.basketballinsiders.org/news/nba-offseason-grades-knicks-rockets-celtics-cavaliers-thunder/'
+            headline, article_content, img_url = scrape_nba_news(url)
 
-    if not headline:
-        print('❌ Failed to scrape article.')
-        return
+            if not headline:
+                print('❌ Failed to scrape article.')
+                return
 
-    print(f'\\n📰 Headline: {headline}\\n')
+            print(f'📰 Headline: {headline}')
+            print()
 
-    script = generate_tiktok_script(headline, article_content)
-    print('🎬 TTS-Friendly TikTok Voiceover Script:\\n')
-    print(script)
-    print(f'\\n🖼️ Image URL: {img_url}')
+            script = generate_tiktok_script(headline, article_content)
+            print('🎬 TTS-Friendly TikTok Voiceover Script:')
+            print()
+            print(script)
+            print()
+            print(f'🖼️ Image URL: {img_url}')
 
-    # Generate TTS voiceover
-    print('\\n🔊 Generating voiceover MP3 with Edge TTS...')
-    await save_script_to_voice(script, voice='en-US-GuyNeural', output_path='tiktok_script.mp3')
-    print('✅ Voiceover saved as \\'tiktok_script.mp3\\'.')
+            # Generate TTS voiceover
+            print()
+            print('🔊 Generating voiceover MP3 with Edge TTS...')
+            await save_script_to_voice(script, voice='en-US-GuyNeural', output_path='tiktok_script.mp3')
+            print('✅ Voiceover saved as tiktok_script.mp3.')
 
-# Run script
-asyncio.run(main())
-EOF
-
-    - name: Run TikTok Script Generator
-      run: python tiktok_generator.py
-    
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: tiktok-script-output
-        path: |
-          tiktok_script.mp3
-        retention-days: 30async def main():
-    url = 'https://www.basketballinsiders.org/news/nba-offseason-grades-knicks-rockets-celtics-cavaliers-thunder/'
-    headline, article_content, img_url = scrape_nba_news(url)
-
-    if not headline:
-        print('❌ Failed to scrape article.')
-        return
-
-    print(f'\\n📰 Headline: {headline}\\n')
-
-    script = generate_tiktok_script(headline, article_content)
-    print('🎬 TTS-Friendly TikTok Voiceover Script:\\n')
-    print(script)
-    print(f'\\n🖼️ Image URL: {img_url}')
-
-    # Generate TTS voiceover
-    print('\\n🔊 Generating voiceover MP3 with Edge TTS...')
-    await save_script_to_voice(script, voice='en-US-GuyNeural', output_path='tiktok_script.mp3')
-    print('✅ Voiceover saved as \\'tiktok_script.mp3\\'.')
-
-# Run script
-asyncio.run(main())
-"
+        # Run script
+        asyncio.run(main())
+        EOF
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
