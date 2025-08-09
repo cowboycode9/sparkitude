@@ -22,9 +22,9 @@ jobs:
       run: |
         pip install requests beautifulsoup4 edge-tts nest_asyncio
     
-    - name: Run TikTok Script Generator
+    - name: Create Python script
       run: |
-        python -c "
+        cat > tiktok_generator.py << 'EOF'
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -119,6 +119,39 @@ async def save_script_to_voice(script_text, voice='en-US-GuyNeural', output_path
 
 # Main function
 async def main():
+    url = 'https://www.basketballinsiders.org/news/nba-offseason-grades-knicks-rockets-celtics-cavaliers-thunder/'
+    headline, article_content, img_url = scrape_nba_news(url)
+
+    if not headline:
+        print('❌ Failed to scrape article.')
+        return
+
+    print(f'\\n📰 Headline: {headline}\\n')
+
+    script = generate_tiktok_script(headline, article_content)
+    print('🎬 TTS-Friendly TikTok Voiceover Script:\\n')
+    print(script)
+    print(f'\\n🖼️ Image URL: {img_url}')
+
+    # Generate TTS voiceover
+    print('\\n🔊 Generating voiceover MP3 with Edge TTS...')
+    await save_script_to_voice(script, voice='en-US-GuyNeural', output_path='tiktok_script.mp3')
+    print('✅ Voiceover saved as \\'tiktok_script.mp3\\'.')
+
+# Run script
+asyncio.run(main())
+EOF
+
+    - name: Run TikTok Script Generator
+      run: python tiktok_generator.py
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: tiktok-script-output
+        path: |
+          tiktok_script.mp3
+        retention-days: 30async def main():
     url = 'https://www.basketballinsiders.org/news/nba-offseason-grades-knicks-rockets-celtics-cavaliers-thunder/'
     headline, article_content, img_url = scrape_nba_news(url)
 
