@@ -1,0 +1,384 @@
+[
+  {
+    "id": "p1",
+    "phrase": "Alright NBA fans",
+    "keyword": "NBA fans",
+    "images": [
+      "images/p1_img1.jpg",
+      "images/p1_img2.jpg"
+    ]
+  },
+  {
+    "id": "p2",
+    "phrase": "let's dive into these offseason grades",
+    "keyword": "NBA offseason",
+    "images": [
+      "images/p2_img1.jpg",
+      "images/p2_img2.jpg"
+    ]
+  },
+  {
+    "id": "p3",
+    "phrase": "starting with the Knicks",
+    "keyword": "Knicks basketball",
+    "images": [
+      "images/p3_img1.jpg",
+      "images/p3_img2.jpg"
+    ]
+  },
+  {
+    "id": "p4",
+    "phrase": "they added Clarkson and Yabusele",
+    "keyword": "Jordan Clarkson",
+    "images": [
+      "images/p4_img1.jpg",
+      "images/p4_img2.jpg"
+    ]
+  },
+  {
+    "id": "p5",
+    "phrase": "which gives them some much needed scoring punch and frontcourt depth",
+    "keyword": "NBA frontcourt",
+    "images": [
+      "images/p5_img1.jpg",
+      "images/p5_img2.jpg"
+    ]
+  },
+  {
+    "id": "p6",
+    "phrase": "and that is a B minus in my book",
+    "keyword": "NBA scoreboard",
+    "images": [
+      "images/p6_img1.jpg",
+      "images/p6_img2.jpg"
+    ]
+  },
+  {
+    "id": "p7",
+    "phrase": "but the real story is how coach Mike Brown will transform their offense and use that depth to push them higher",
+    "keyword": "Mike Brown Lakers offense",
+    "images": [
+      "images/p7_img1.jpg",
+      "images/p7_img2.jpg"
+    ]
+  },
+  {
+    "id": "p8",
+    "phrase": "so it's a big moment for him and for Jalen Brunson and Karl-Anthony Towns",
+    "keyword": "Jalen Brunson",
+    "images": [
+      "images/p8_img1.jpg",
+      "images/p8_img2.jpg"
+    ]
+  },
+  {
+    "id": "p9",
+    "phrase": "they're both looking at some legacy defining years ahead",
+    "keyword": "LeBron James",
+    "images": [
+      "images/p9_img1.jpg",
+      "images/p9_img2.jpg"
+    ]
+  },
+  {
+    "id": "p10",
+    "phrase": "the Knicks are definitely on the rise",
+    "keyword": "Knicks",
+    "images": [
+      "images/p10_img1.jpg",
+      "images/p10_img2.jpg"
+    ]
+  },
+  {
+    "id": "p11",
+    "phrase": "next up the Rockets",
+    "keyword": "Houston Rockets",
+    "images": [
+      "images/p11_img1.jpg",
+      "images/p11_img2.jpg"
+    ]
+  },
+  {
+    "id": "p12",
+    "phrase": "bringing in Durant",
+    "keyword": "Kevin Durant",
+    "images": [
+      "images/p12_img1.jpg",
+      "images/p12_img2.jpg"
+    ]
+  },
+  {
+    "id": "p13",
+    "phrase": "Finney-Smith, Capela and Okogie",
+    "keyword": "Finney-Smith dunk",
+    "images": [
+      "images/p13_img1.jpg",
+      "images/p13_img2.jpg"
+    ]
+  },
+  {
+    "id": "p14",
+    "phrase": "that's a serious upgrade to their scoring and defense",
+    "keyword": "NBA",
+    "images": [
+      "images/p14_img1.jpg",
+      "images/p14_img2.jpg"
+    ]
+  },
+  {
+    "id": "p15",
+    "phrase": "losing Green and Brooks makes sense given their inefficiency",
+    "keyword": "Jayson Green NBA",
+    "images": [
+      "images/p15_img1.jpg",
+      "images/p15_img2.jpg"
+    ]
+  },
+  {
+    "id": "p16",
+    "phrase": "and grabbing Durant is a massive win",
+    "keyword": "Kevin Durant",
+    "images": [
+      "images/p16_img1.jpg",
+      "images/p16_img2.jpg"
+    ]
+  },
+  {
+    "id": "p17",
+    "phrase": "but I do wonder if they should've spent that money on more shooting guards",
+    "keyword": "NBA shooting guards",
+    "images": []
+  },
+  {
+    "id": "p18",
+    "phrase": "still I give the Rockets an A for their bold moves and talent boost",
+    "keyword": "Houston Rockets",
+    "images": [
+      "images/p18_img1.jpg",
+      "images/p18_img2.jpg"
+    ]
+  },
+  {
+    "id": "p19",
+    "phrase": "now the Celtics",
+    "keyword": "Boston Celtics",
+    "images": [
+      "images/p19_img1.jpg",
+      "images/p19_img2.jpg"
+    ]
+  },
+  {
+    "id": "p20",
+    "phrase": "oh man, losing Holiday",
+    "keyword": "Jrue Holiday",
+    "images": [
+      "images/p20_img1.jpg"
+    ]
+  },
+  {
+    "id": "p21",
+    "phrase": "Porzingis and Kornet really hurts",
+    "keyword": "Kristaps Porzingis",
+    "images": [
+      "images/p21_img1.jpg",
+      "images/p21_img2.jpg"
+    ]
+  },
+  {
+    "id": "p22",
+    "phrase": "especially with Tatum injured",
+    "keyword": "Jayson Tatum",
+    "images": [
+      "images/p22_img1.jpg",
+      "images/p22_img2.jpg"
+    ]
+  },
+  {
+    "id": "p23",
+    "phrase": "they were looking to move Simons too",
+    "keyword": "CJ McCollum",
+    "images": [
+      "images/p23_img1.jpg",
+      "images/p23_img2.jpg"
+    ]
+  },
+  {
+    "id": "p24",
+    "phrase": "which shows how much they're shifting gears",
+    "keyword": "NBA player fast break",
+    "images": [
+      "images/p24_img1.jpg",
+      "images/p24_img2.jpg"
+    ]
+  },
+  {
+    "id": "p25",
+    "phrase": "they saved around 200 million in tax",
+    "keyword": "NBA salary cap",
+    "images": [
+      "images/p25_img1.jpg",
+      "images/p25_img2.jpg"
+    ]
+  },
+  {
+    "id": "p26",
+    "phrase": "so I get their focus on minimizing costs",
+    "keyword": "NBA team logos",
+    "images": [
+      "images/p26_img1.jpg",
+      "images/p26_img2.jpg"
+    ]
+  },
+  {
+    "id": "p27",
+    "phrase": "but it's a tough season coming",
+    "keyword": "NBA",
+    "images": [
+      "images/p27_img1.jpg",
+      "images/p27_img2.jpg"
+    ]
+  },
+  {
+    "id": "p28",
+    "phrase": "and that's a B for me",
+    "keyword": "basketball court",
+    "images": [
+      "images/p28_img1.jpg"
+    ]
+  },
+  {
+    "id": "p29",
+    "phrase": "Cleveland, they stayed calm and made smart moves with Lonzo and Nance",
+    "keyword": "Cleveland Cavaliers",
+    "images": [
+      "images/p29_img1.jpg",
+      "images/p29_img2.jpg"
+    ]
+  },
+  {
+    "id": "p30",
+    "phrase": "focusing on size and health",
+    "keyword": "NBA players",
+    "images": [
+      "images/p30_img1.jpg",
+      "images/p30_img2.jpg"
+    ]
+  },
+  {
+    "id": "p31",
+    "phrase": "they're not overreacting to that playoff exit",
+    "keyword": "NBA playoff exit",
+    "images": [
+      "images/p31_img1.jpg",
+      "images/p31_img2.jpg"
+    ]
+  },
+  {
+    "id": "p32",
+    "phrase": "and that's a good approach",
+    "keyword": "NBA coach gesture",
+    "images": [
+      "images/p32_img1.jpg",
+      "images/p32_img2.jpg"
+    ]
+  },
+  {
+    "id": "p33",
+    "phrase": "I'd give them a B too",
+    "keyword": "NBA scoreboard",
+    "images": [
+      "images/p33_img1.jpg",
+      "images/p33_img2.jpg"
+    ]
+  },
+  {
+    "id": "p34",
+    "phrase": "finally the Thunder",
+    "keyword": "Oklahoma City Thunder",
+    "images": [
+      "images/p34_img1.jpg",
+      "images/p34_img2.jpg"
+    ]
+  },
+  {
+    "id": "p35",
+    "phrase": "they kept their core locked in",
+    "keyword": "NBA team huddle",
+    "images": [
+      "images/p35_img1.jpg",
+      "images/p35_img2.jpg"
+    ]
+  },
+  {
+    "id": "p36",
+    "phrase": "Gilgeous-Alexander",
+    "keyword": "Shai Gilgeous-Alexander",
+    "images": [
+      "images/p36_img1.jpg",
+      "images/p36_img2.jpg"
+    ]
+  },
+  {
+    "id": "p37",
+    "phrase": "Williams, Holmgren",
+    "keyword": "Williams NBA",
+    "images": [
+      "images/p37_img1.jpg",
+      "images/p37_img2.jpg"
+    ]
+  },
+  {
+    "id": "p38",
+    "phrase": "and that's huge for their future",
+    "keyword": "NBA team logos",
+    "images": [
+      "images/p38_img1.jpg",
+      "images/p38_img2.jpg"
+    ]
+  },
+  {
+    "id": "p39",
+    "phrase": "Holmgren's extension is promising but he's gotta stay healthy",
+    "keyword": "Chet Holmgren",
+    "images": [
+      "images/p39_img1.jpg",
+      "images/p39_img2.jpg"
+    ]
+  },
+  {
+    "id": "p40",
+    "phrase": "so I'd say they're solid with a B",
+    "keyword": "NBA player",
+    "images": [
+      "images/p40_img1.jpg",
+      "images/p40_img2.jpg"
+    ]
+  },
+  {
+    "id": "p41",
+    "phrase": "and overall I think these teams played it smart",
+    "keyword": "NBA teams",
+    "images": [
+      "images/p41_img1.jpg",
+      "images/p41_img2.jpg"
+    ]
+  },
+  {
+    "id": "p42",
+    "phrase": "calculated, and ready to compete next season",
+    "keyword": "NBA player in action",
+    "images": [
+      "images/p42_img1.jpg",
+      "images/p42_img2.jpg"
+    ]
+  },
+  {
+    "id": "p43",
+    "phrase": "so what team do you think made the biggest leap this summer",
+    "keyword": "NBA offseason",
+    "images": [
+      "images/p43_img1.jpg",
+      "images/p43_img2.jpg"
+    ]
+  }
+]
