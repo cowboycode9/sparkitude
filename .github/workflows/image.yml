@@ -235,13 +235,35 @@ jobs:
                 return False
 
         def main():
-            # Your TikTok script
-            script = """
-            Alright NBA fans, let's dive into these offseason grades, starting with the Knicks, they added Clarkson and Yabusele, which gives them some much needed scoring punch and frontcourt depth, and that is a B minus in my book, but the real story is how coach Mike Brown will transform their offense and use that depth to push them higher, so it's a big moment for him and for Jalen Brunson and Karl-Anthony Towns, they're both looking at some legacy defining years ahead, the Knicks are definitely on the rise, next up the Rockets, bringing in Durant, Finney-Smith, Capela and Okogie, that's a serious upgrade to their scoring and defense, losing Green and Brooks makes sense given their inefficiency, and grabbing Durant is a massive win, but I do wonder if they should've spent that money on more shooting guards, still I give the Rockets an A for their bold moves and talent boost, now the Celtics, oh man, losing Holiday, Porzingis and Kornet really hurts, especially with Tatum injured, they were looking to move Simons too, which shows how much they're shifting gears, they saved around 200 million in tax, so I get their focus on minimizing costs, but it's a tough season coming, and that's a B for me, Cleveland, they stayed calm and made smart moves with Lonzo and Nance, focusing on size and health, they're not overreacting to that playoff exit, and that's a good approach, I'd give them a B too, finally the Thunder, they kept their core locked in, Gilgeous-Alexander, Williams, Holmgren, and that's huge for their future, Holmgren's extension is promising but he's gotta stay healthy, so I'd say they're solid with a B, and overall I think these teams played it smart, calculated, and ready to compete next season, so what team do you think made the biggest leap this summer
-            """
+            # Read TikTok script from source/script.txt
+            try:
+                with open("source/script.txt", "r", encoding="utf-8") as f:
+                    script = f.read()
+                print("✅ Successfully loaded script from source/script.txt")
+            except FileNotFoundError:
+                print("❌ Error: source/script.txt not found!")
+                return []
+            except Exception as e:
+                print(f"❌ Error reading script file: {e}")
+                return []
             
             print("🎬 TikTok Script Visual Finder - GitHub Actions Edition")
             print("="*65)
+            
+            # Clean up existing files
+            print("\n🧹 Cleaning up existing files...")
+            if os.path.exists("edit/images"):
+                import shutil
+                shutil.rmtree("edit/images")
+                print("✅ Removed existing images directory")
+            
+            if os.path.exists("edit/tiktok_script_data.json"):
+                os.remove("edit/tiktok_script_data.json")
+                print("✅ Removed existing JSON file")
+            
+            # Recreate images directory
+            os.makedirs("edit/images", exist_ok=True)
+            print("✅ Created fresh images directory")
             
             # Step 1: Split script into individual phrases
             print("\n📝 Splitting script into individual phrases...")
