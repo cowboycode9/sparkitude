@@ -88,8 +88,8 @@ jobs:
                 print(f'Error scraping: {e}')
                 return None, None, None
 
-        # Multiple API fallback system
-        def generate_tiktok_script_fallback(headline, article_content):
+        # Fallback script generator for when API fails
+        def generate_fallback_script(headline, article_content):
             prompt = f"""
         You are writing a TikTok NBA commentary script for a text-to-speech voice.
 
@@ -179,15 +179,20 @@ jobs:
             return generate_fallback_script(headline, article_content)
 
         def generate_fallback_script(headline, article_content):
-            # Create a basic script template when APIs fail
-            script_templates = [
-                f"Alright NBA fans, big news just dropped, {headline[:100]}, this is exactly what we have been waiting for, the league is getting more competitive, and honestly this move makes total sense, what do you think about this trade, comment below and let me know your thoughts.",
-                f"NBA update everyone, so {headline[:100]}, and I have to say this is pretty interesting, the front office is making moves, this could change everything for the playoffs, definitely keeps things exciting, what is your prediction for this season.",
-                f"Breaking NBA news, {headline[:100]}, and wow this is huge for the franchise, they are building something special here, the chemistry is going to be amazing, I cannot wait to see how this plays out, drop your reactions in the comments."
-            ]
+            # Create a basic script template when API fails
+            print("🔄 Using fallback script template...")
             
-            import random
-            return random.choice(script_templates)
+            # Extract key words from headline for more dynamic content
+            headline_words = headline.lower().split()
+            
+            if any(word in headline_words for word in ['trade', 'traded', 'deal']):
+                return f"Alright NBA fans, big trade news just dropped, {headline[:80]}, this is exactly what we have been waiting for, the league is getting more competitive, and honestly this move makes total sense, what do you think about this trade, comment below and let me know your thoughts."
+            elif any(word in headline_words for word in ['sign', 'signed', 'contract']):
+                return f"NBA contract update everyone, so {headline[:80]}, and I have to say this is pretty interesting, the front office is making moves, this could change everything for the season, definitely keeps things exciting, what is your prediction."
+            elif any(word in headline_words for word in ['injury', 'injured', 'hurt']):
+                return f"NBA injury update, {headline[:80]}, and this is tough news for the team, hopefully they can bounce back strong, the depth will be tested now, what do you think about their chances moving forward."
+            else:
+                return f"Breaking NBA news, {headline[:80]}, and wow this is huge for the franchise, they are building something special here, the chemistry is going to be amazing, I cannot wait to see how this plays out, drop your reactions in the comments."
 
         # Download and save image with better error handling
         def download_image(img_url, output_path):
@@ -234,7 +239,7 @@ jobs:
             print(f'📰 Headline: {headline}')
             print()
 
-            script = generate_tiktok_script_fallback(headline, article_content)
+            script = generate_tiktok_script(headline, article_content)
             print('🎬 TTS-Friendly TikTok Voiceover Script:')
             print()
             print(script)
