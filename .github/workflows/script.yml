@@ -90,25 +90,29 @@ jobs:
 
         # AI generation using correct Pollinations API endpoints
         def generate_tiktok_script(headline, article_content):
-            prompt = f"""You are writing a TikTok NBA commentary script for a text-to-speech voice.
+            prompt = f"""You are writing a TikTok NBA commentary script for a text-to-speech voice that sounds NATURAL and HUMAN.
 
-        CRITICAL TTS RULES for perfect natural speech:
-        - Write like you are having an excited conversation with a friend
-        - Add commas when you would naturally take a breath while speaking
-        - Use commas to separate different thoughts or topics
-        - Add commas after team names when transitioning to what they did
-        - Put commas before "but", "and", "so" when connecting major ideas
-        - Do not overdo it - aim for 2-4 word groups between most commas
-        - NO periods, colons, dashes, or any punctuation except commas and ONE period at the very end
-        - Instead of "grade: B" say "I give them a B" or "that is a solid B grade"
-        - NO symbols like colons, dashes, hyphens - only words and commas
-        - Sound enthusiastic and natural, not robotic or rushed
-        - Be under 60 seconds when spoken
+        CRITICAL TTS RULES for natural human speech with SHORT PAUSES:
+        - Use commas strategically for natural breathing and emphasis (short pauses)
+        - NEVER use periods except ONE at the very end (periods create long pauses)
+        - Break up long thoughts where humans naturally pause when excited
+        - Think about how YOU would tell this story to a friend face-to-face
+        - Use commas after impactful statements or when switching topics
+        - Create natural rhythm with commas: "Statement, quick reaction, another statement, emphasis"
+        - Vary the length between commas naturally - sometimes 2-3 words, sometimes 5-7 words
+        - Sound conversational and excited, not like reading a script
+        - Keep it under 60 seconds when spoken
+
+        GOOD EXAMPLE of natural rhythm with SHORT pauses:
+        "Yo the Lakers just made a crazy move, they traded for this All-Star guard, I'm honestly shocked by this, the fit is perfect though, this could be championship level stuff, what do you guys think about this trade"
+
+        BAD EXAMPLE (too long without breaks):
+        "Yo the Lakers just made a crazy move and they traded for this All-Star guard and I'm honestly shocked by this but the fit is perfect though and this could be championship level stuff so what do you guys think about this trade"
 
         NBA Headline: {headline}
         Article Info: {article_content[:800]}
 
-        Write with natural speech rhythm and spell out grades naturally. NO colons, dashes, or symbols - just words and commas. Output just the script."""
+        Write like you're having an excited conversation with natural SHORT pauses using commas. Think where you'd naturally breathe while speaking fast and excited. Output just the script with ONE period at the end only."""
 
             # URL encode the prompt for GET request
             import urllib.parse
