@@ -1,11 +1,236 @@
 [
   {
     "id": "p1",
-    "phrase": "API Error 502",
-    "keyword": "NBA basketball",
+    "phrase": "Yo, did you see the headline",
+    "keyword": "NBA headline",
     "images": [
       "images/p1_img1.jpg",
       "images/p1_img2.jpg"
+    ]
+  },
+  {
+    "id": "p2",
+    "phrase": "guys, the Warriors",
+    "keyword": "Golden State Warriors",
+    "images": [
+      "images/p2_img1.jpg",
+      "images/p2_img2.jpg"
+    ]
+  },
+  {
+    "id": "p3",
+    "phrase": "Cavs, and Mavericks all are gonna chase LeBron next summer",
+    "keyword": "Cavs basketball",
+    "images": [
+      "images/p3_img1.jpg",
+      "images/p3_img2.jpg"
+    ]
+  },
+  {
+    "id": "p4",
+    "phrase": "can you believe it",
+    "keyword": "LeBron James dunk",
+    "images": [
+      "images/p4_img1.jpg",
+      "images/p4_img2.jpg"
+    ]
+  },
+  {
+    "id": "p5",
+    "phrase": "after his contract runs out",
+    "keyword": "NBA free agency",
+    "images": [
+      "images/p5_img1.jpg",
+      "images/p5_img2.jpg"
+    ]
+  },
+  {
+    "id": "p6",
+    "phrase": "this is wild, like",
+    "keyword": "NBA",
+    "images": [
+      "images/p6_img1.jpg",
+      "images/p6_img2.jpg"
+    ]
+  },
+  {
+    "id": "p7",
+    "phrase": "he's still out there",
+    "keyword": "LeBron James buzzer beater",
+    "images": [
+      "images/p7_img1.jpg",
+      "images/p7_img2.jpg"
+    ]
+  },
+  {
+    "id": "p8",
+    "phrase": "at 41, and he's still putting up numbers",
+    "keyword": "LeBron James",
+    "images": [
+      "images/p8_img1.jpg",
+      "images/p8_img2.jpg"
+    ]
+  },
+  {
+    "id": "p9",
+    "phrase": "like, 24.4 points",
+    "keyword": "NBA player scoring",
+    "images": [
+      "images/p9_img1.jpg",
+      "images/p9_img2.jpg"
+    ]
+  },
+  {
+    "id": "p10",
+    "phrase": "7.8 rebounds, 8",
+    "keyword": "NBA rebounding stats",
+    "images": [
+      "images/p10_img1.jpg",
+      "images/p10_img2.jpg"
+    ]
+  },
+  {
+    "id": "p11",
+    "phrase": "2 assists last season",
+    "keyword": "NBA assists",
+    "images": [
+      "images/p11_img1.jpg",
+      "images/p11_img2.jpg"
+    ]
+  },
+  {
+    "id": "p12",
+    "phrase": "seriously, how many guys would even be doing that at that age",
+    "keyword": "NBA players",
+    "images": [
+      "images/p12_img1.jpg",
+      "images/p12_img2.jpg"
+    ]
+  },
+  {
+    "id": "p13",
+    "phrase": "but the thing is",
+    "keyword": "NBA",
+    "images": [
+      "images/p13_img1.jpg",
+      "images/p13_img2.jpg"
+    ]
+  },
+  {
+    "id": "p14",
+    "phrase": "nobody's sure if he’s gonna keep playing at that level",
+    "keyword": "NBA player",
+    "images": [
+      "images/p14_img1.jpg",
+      "images/p14_img2.jpg"
+    ]
+  },
+  {
+    "id": "p15",
+    "phrase": "right, but still",
+    "keyword": "NBA",
+    "images": [
+      "images/p15_img1.jpg",
+      "images/p15_img2.jpg"
+    ]
+  },
+  {
+    "id": "p16",
+    "phrase": "his name alone, as one of the greatest ever",
+    "keyword": "Michael Jordan",
+    "images": [
+      "images/p16_img1.jpg",
+      "images/p16_img2.jpg"
+    ]
+  },
+  {
+    "id": "p17",
+    "phrase": "makes him the biggest free agent target",
+    "keyword": "NBA free agent",
+    "images": [
+      "images/p17_img1.jpg",
+      "images/p17_img2.jpg"
+    ]
+  },
+  {
+    "id": "p18",
+    "phrase": "easily, and those three teams",
+    "keyword": "NBA teams",
+    "images": [
+      "images/p18_img1.jpg",
+      "images/p18_img2.jpg"
+    ]
+  },
+  {
+    "id": "p19",
+    "phrase": "Cleveland, Dallas",
+    "keyword": "Cleveland Cavaliers",
+    "images": [
+      "images/p19_img1.jpg",
+      "images/p19_img2.jpg"
+    ]
+  },
+  {
+    "id": "p20",
+    "phrase": "Golden State, they've all got their eyes on him",
+    "keyword": "NBA basketball",
+    "images": [
+      "images/p20_img1.jpg",
+      "images/p20_img2.jpg"
+    ]
+  },
+  {
+    "id": "p21",
+    "phrase": "it’s like a high-stakes chase",
+    "keyword": "NBA",
+    "images": [
+      "images/p21_img1.jpg",
+      "images/p21_img2.jpg"
+    ]
+  },
+  {
+    "id": "p22",
+    "phrase": "and honestly, who wouldn’t want LeBron on their team",
+    "keyword": "LeBron James",
+    "images": [
+      "images/p22_img1.jpg",
+      "images/p22_img2.jpg"
+    ]
+  },
+  {
+    "id": "p23",
+    "phrase": "right, this could totally shape the league",
+    "keyword": "NBA league evolution",
+    "images": [
+      "images/p23_img1.jpg",
+      "images/p23_img2.jpg"
+    ]
+  },
+  {
+    "id": "p24",
+    "phrase": "what do you guys think",
+    "keyword": "NBA fans",
+    "images": [
+      "images/p24_img1.jpg",
+      "images/p24_img2.jpg"
+    ]
+  },
+  {
+    "id": "p25",
+    "phrase": "are you surprised at all",
+    "keyword": "NBA players",
+    "images": [
+      "images/p25_img1.jpg",
+      "images/p25_img2.jpg"
+    ]
+  },
+  {
+    "id": "p26",
+    "phrase": "or is this just what we kinda expected?",
+    "keyword": "NBA game",
+    "images": [
+      "images/p26_img1.jpg",
+      "images/p26_img2.jpg"
     ]
   }
 ]
