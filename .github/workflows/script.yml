@@ -14,15 +14,15 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
     
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.10'
     
     - name: Install dependencies
-      run: pip install requests beautifulsoup4 edge-tts nest_asyncio pillow openai
+      run: pip install requests beautifulsoup4 edge-tts nest_asyncio pillow
     
     - name: Create source directory and clean old files
       run: |
@@ -58,8 +58,6 @@ jobs:
         from PIL import Image
         import io
         import os
-        import time
-        import random
         import urllib.parse
 
         # Allow async in some environments
@@ -67,12 +65,9 @@ jobs:
 
         # Scraper for NBA article
         def scrape_nba_news(url):
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
+            headers = {'User-Agent': 'Mozilla/5.0'}
             try:
-                response = requests.get(url, headers=headers, timeout=10)
-                response.raise_for_status()
+                response = requests.get(url, headers=headers)
                 soup = BeautifulSoup(response.text, 'html.parser')
 
                 # Headline
@@ -88,8 +83,7 @@ jobs:
                 img_url = og_image['content'] if og_image and og_image.has_attr('content') else 'No image found'
 
                 return headline, article_text, img_url
-            except Exception as e:
-                print(f'Error scraping: {e}')
+            except Exception:
                 return None, None, None
 
         # AI generation using correct Pollinations API endpoints
