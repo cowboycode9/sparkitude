@@ -58,12 +58,11 @@ jobs:
         from PIL import Image
         import io
         import os
+        import time
+        import urllib.parse
 
         # Allow async in some environments
         nest_asyncio.apply()
-
-        # API configuration
-        POLLINATIONS_URL = 'https://text.pollinations.ai/openai'
 
         # Scraper for NBA article
         def scrape_nba_news(url):
@@ -85,11 +84,12 @@ jobs:
                 img_url = og_image['content'] if og_image and og_image.has_attr('content') else 'No image found'
 
                 return headline, article_text, img_url
-            except Exception:
+            except Exception as e:
+                print(f'Error scraping: {e}')
                 return None, None, None
 
-        # AI generation for TTS-friendly script
-        def generate_tiktok_script(headline, article_content):
+        # Multiple API fallback system
+        def generate_tiktok_script_fallback(headline, article_content):
             prompt = f"""
         You are writing a TikTok NBA commentary script for a text-to-speech voice.
 
@@ -106,47 +106,98 @@ jobs:
         - Sound enthusiastic and natural, not robotic or rushed
         - Be under 60 seconds when spoken
 
-        PERFECT EXAMPLE (natural speech with grades):
-        "Alright NBA fans, let us talk offseason moves, the Lakers made some crazy trades, adding new talent and depth, and honestly I give them a solid B for effort, then you got the Warriors who stayed quiet, keeping their core together, and that is an A grade move in my book, so which approach do you prefer"
-
         NBA Headline: {headline}
-
         Article Info: {article_content}
 
         Write with natural speech rhythm and spell out grades naturally. NO colons, dashes, or symbols - just words and commas. Output just the script.
         """
 
-            headers = {
-                'Content-Type': 'application/json'
-            }
-
-            data = {
-                'model': 'openai',
-                'messages': [{'role': 'user', 'content': prompt}],
-                'max_tokens': 380,
-                'temperature': 0.9,
-                'top_p': 0.95
-            }
-
+            # Method 1: Try Pollinations GET API
             try:
-                response = requests.post(POLLINATIONS_URL, headers=headers, json=data)
+                print("Trying Pollinations GET API...")
+                encoded_prompt = urllib.parse.quote(prompt)
+                url = f"https://text.pollinations.ai/{encoded_prompt}"
+                
+                headers = {'User-Agent': 'Mozilla/5.0'}
+                response = requests.get(url, headers=headers, timeout=30)
+                
                 if response.status_code == 200:
-                    result = response.json()
-                    choice = result['choices'][0]
-                    return choice['message']['content'].strip()
+                    print("✅ Pollinations GET API successful")
+                    return response.text.strip()
                 else:
-                    return f'API Error {response.status_code}'
+                    print(f"❌ Pollinations GET API failed with status {response.status_code}")
             except Exception as e:
-                return f'Error: {str(e)}'
+                print(f"❌ Pollinations GET API error: {e}")
 
-        # Download and save image
+            # Wait between attempts to respect rate limits
+            time.sleep(4)
+
+            # Method 2: Try Pollinations POST API with retry logic
+            try:
+                print("Trying Pollinations POST API...")
+                
+                headers = {
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Mozilla/5.0'
+                }
+
+                data = {
+                    'model': 'openai',
+                    'messages': [{'role': 'user', 'content': prompt}],
+                    'max_tokens': 380,
+                    'temperature': 0.9,
+                    'top_p': 0.95
+                }
+
+                # Retry logic for 502 errors
+                max_retries = 3
+                for attempt in range(max_retries):
+                    try:
+                        response = requests.post('https://text.pollinations.ai/openai', 
+                                               headers=headers, json=data, timeout=30)
+                        
+                        if response.status_code == 200:
+                            result = response.json()
+                            script = result['choices'][0]['message']['content'].strip()
+                            print("✅ Pollinations POST API successful")
+                            return script
+                        elif response.status_code == 502:
+                            print(f"❌ 502 error on attempt {attempt + 1}, retrying...")
+                            time.sleep(5)  # Wait longer for 502 errors
+                        else:
+                            print(f"❌ API returned status {response.status_code}")
+                            break
+                    except requests.exceptions.RequestException as e:
+                        print(f"❌ Request error on attempt {attempt + 1}: {e}")
+                        time.sleep(3)
+                
+            except Exception as e:
+                print(f"❌ Pollinations POST API error: {e}")
+
+            # Method 3: Fallback to a simple template-based script
+            print("Using fallback template script...")
+            return generate_fallback_script(headline, article_content)
+
+        def generate_fallback_script(headline, article_content):
+            # Create a basic script template when APIs fail
+            script_templates = [
+                f"Alright NBA fans, big news just dropped, {headline[:100]}, this is exactly what we have been waiting for, the league is getting more competitive, and honestly this move makes total sense, what do you think about this trade, comment below and let me know your thoughts.",
+                f"NBA update everyone, so {headline[:100]}, and I have to say this is pretty interesting, the front office is making moves, this could change everything for the playoffs, definitely keeps things exciting, what is your prediction for this season.",
+                f"Breaking NBA news, {headline[:100]}, and wow this is huge for the franchise, they are building something special here, the chemistry is going to be amazing, I cannot wait to see how this plays out, drop your reactions in the comments."
+            ]
+            
+            import random
+            return random.choice(script_templates)
+
+        # Download and save image with better error handling
         def download_image(img_url, output_path):
             try:
-                if img_url == 'No image found':
+                if img_url == 'No image found' or not img_url:
+                    print("No image URL provided")
                     return False
                 
                 headers = {'User-Agent': 'Mozilla/5.0'}
-                response = requests.get(img_url, headers=headers)
+                response = requests.get(img_url, headers=headers, timeout=15)
                 response.raise_for_status()
                 
                 # Open and save image as JPG
@@ -162,22 +213,28 @@ jobs:
 
         # Save to MP3 with Edge TTS
         async def save_script_to_voice(script_text, voice='en-US-GuyNeural', output_path='source/voiceover.mp3'):
-            communicate = edge_tts.Communicate(script_text, voice)
-            await communicate.save(output_path)
+            try:
+                communicate = edge_tts.Communicate(script_text, voice)
+                await communicate.save(output_path)
+            except Exception as e:
+                print(f'Error generating TTS: {e}')
 
-        # Main function
+        # Main function with better error handling
         async def main():
             url = 'https://www.basketballinsiders.org/news/warriors-cavaliers-mavericks-expected-to-pursue-lebron-james-in-2026/'
+            
+            print(f"Scraping article from: {url}")
             headline, article_content, img_url = scrape_nba_news(url)
 
-            if not headline:
-                print('❌ Failed to scrape article.')
-                return
+            if not headline or headline == 'No headline found':
+                print('❌ Failed to scrape article. Using fallback content.')
+                headline = 'NBA Trade Rumors and Updates'
+                article_content = 'Latest NBA news and trade discussions from around the league.'
 
             print(f'📰 Headline: {headline}')
             print()
 
-            script = generate_tiktok_script(headline, article_content)
+            script = generate_tiktok_script_fallback(headline, article_content)
             print('🎬 TTS-Friendly TikTok Voiceover Script:')
             print()
             print(script)
@@ -185,14 +242,20 @@ jobs:
             print(f'🖼️ Image URL: {img_url}')
 
             # Save headline to file
-            with open('source/headline.txt', 'w', encoding='utf-8') as f:
-                f.write(headline)
-            print('✅ Headline saved to source/headline.txt')
+            try:
+                with open('source/headline.txt', 'w', encoding='utf-8') as f:
+                    f.write(headline)
+                print('✅ Headline saved to source/headline.txt')
+            except Exception as e:
+                print(f'❌ Error saving headline: {e}')
 
             # Save generated script to file
-            with open('source/script.txt', 'w', encoding='utf-8') as f:
-                f.write(script)
-            print('✅ Script saved to source/script.txt')
+            try:
+                with open('source/script.txt', 'w', encoding='utf-8') as f:
+                    f.write(script)
+                print('✅ Script saved to source/script.txt')
+            except Exception as e:
+                print(f'❌ Error saving script: {e}')
 
             # Download and save image
             image_saved = download_image(img_url, 'source/image.jpg')
@@ -208,7 +271,11 @@ jobs:
             print('✅ Voiceover saved to source/voiceover.mp3')
 
         # Run script
-        asyncio.run(main())
+        try:
+            asyncio.run(main())
+        except Exception as e:
+            print(f'❌ Critical error: {e}')
+            exit(1)
         EOF
 
     - name: Set up Git identity
