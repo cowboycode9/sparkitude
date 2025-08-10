@@ -58,6 +58,8 @@ jobs:
         from PIL import Image
         import io
         import os
+        import time
+        import random
         import urllib.parse
 
         # Allow async in some environments
@@ -235,10 +237,8 @@ jobs:
                 if img_url == 'No image found':
                     return False
                 
-                headers = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                }
-                response = requests.get(img_url, headers=headers, timeout=15)
+                headers = {'User-Agent': 'Mozilla/5.0'}
+                response = requests.get(img_url, headers=headers)
                 response.raise_for_status()
                 
                 # Open and save image as JPG
@@ -254,19 +254,12 @@ jobs:
 
         # Save to MP3 with Edge TTS
         async def save_script_to_voice(script_text, voice='en-US-GuyNeural', output_path='source/voiceover.mp3'):
-            try:
-                communicate = edge_tts.Communicate(script_text, voice)
-                await communicate.save(output_path)
-                return True
-            except Exception as e:
-                print(f'Error generating TTS: {e}')
-                return False
+            communicate = edge_tts.Communicate(script_text, voice)
+            await communicate.save(output_path)
 
         # Main function
         async def main():
             url = 'https://www.basketballinsiders.org/news/warriors-cavaliers-mavericks-expected-to-pursue-lebron-james-in-2026/'
-            print(f"Scraping URL: {url}")
-            
             headline, article_content, img_url = scrape_nba_news(url)
 
             if not headline:
@@ -303,11 +296,8 @@ jobs:
             # Generate TTS voiceover
             print()
             print('🔊 Generating voiceover MP3 with Edge TTS...')
-            tts_success = await save_script_to_voice(script, voice='en-US-GuyNeural', output_path='source/voiceover.mp3')
-            if tts_success:
-                print('✅ Voiceover saved to source/voiceover.mp3')
-            else:
-                print('⚠️ TTS generation failed')
+            await save_script_to_voice(script, voice='en-US-GuyNeural', output_path='source/voiceover.mp3')
+            print('✅ Voiceover saved to source/voiceover.mp3')
 
         # Run script
         asyncio.run(main())
