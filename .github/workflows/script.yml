@@ -167,7 +167,7 @@ jobs:
 
         # Main function
         async def main():
-            url = 'https://www.basketballinsiders.org/news/nba-offseason-grades-knicks-rockets-celtics-cavaliers-thunder/'
+            url = 'https://www.basketballinsiders.org/news/warriors-cavaliers-mavericks-expected-to-pursue-lebron-james-in-2026/'
             headline, article_content, img_url = scrape_nba_news(url)
 
             if not headline:
