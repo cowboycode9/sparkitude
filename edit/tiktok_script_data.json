@@ -74,9 +74,10 @@
   {
     "id": "p9",
     "phrase": "like, 24.4 points",
-    "keyword": "basketball points graphic",
+    "keyword": "NBA player scoring",
     "images": [
-      "images/p9_img1.jpg"
+      "images/p9_img1.jpg",
+      "images/p9_img2.jpg"
     ]
   },
   {
