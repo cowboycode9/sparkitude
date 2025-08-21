@@ -139,8 +139,7 @@
     "phrase": "his name alone, as one of the greatest ever",
     "keyword": "Michael Jordan",
     "images": [
-      "images/p16_img1.jpg",
-      "images/p16_img2.jpg"
+      "images/p16_img1.jpg"
     ]
   },
   {
@@ -229,7 +228,8 @@
     "phrase": "or is this just what we kinda expected?",
     "keyword": "NBA game",
     "images": [
-      "images/p26_img1.jpg"
+      "images/p26_img1.jpg",
+      "images/p26_img2.jpg"
     ]
   }
 ]
