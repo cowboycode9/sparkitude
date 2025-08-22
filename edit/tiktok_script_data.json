@@ -166,6 +166,7 @@
     "phrase": "Cleveland, Dallas",
     "keyword": "Cleveland Cavaliers",
     "images": [
+      "images/p19_img1.jpg",
       "images/p19_img2.jpg"
     ]
   },
@@ -217,9 +218,10 @@
   {
     "id": "p25",
     "phrase": "are you surprised at all",
-    "keyword": "basketball celebration",
+    "keyword": "NBA players",
     "images": [
-      "images/p25_img1.jpg"
+      "images/p25_img1.jpg",
+      "images/p25_img2.jpg"
     ]
   },
   {
