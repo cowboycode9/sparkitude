@@ -4,8 +4,7 @@
     "phrase": "Yo, did you see the headline",
     "keyword": "NBA headline",
     "images": [
-      "images/p1_img1.jpg",
-      "images/p1_img2.jpg"
+      "images/p1_img1.jpg"
     ]
   },
   {
@@ -139,7 +138,6 @@
     "phrase": "his name alone, as one of the greatest ever",
     "keyword": "Michael Jordan",
     "images": [
-      "images/p16_img1.jpg",
       "images/p16_img2.jpg"
     ]
   },
@@ -202,8 +200,7 @@
     "phrase": "right, this could totally shape the league",
     "keyword": "NBA league evolution",
     "images": [
-      "images/p23_img1.jpg",
-      "images/p23_img2.jpg"
+      "images/p23_img1.jpg"
     ]
   },
   {
