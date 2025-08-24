@@ -155,10 +155,9 @@
   {
     "id": "p18",
     "phrase": "easily, and those three teams",
-    "keyword": "NBA teams",
+    "keyword": "basketball players",
     "images": [
-      "images/p18_img1.jpg",
-      "images/p18_img2.jpg"
+      "images/p18_img1.jpg"
     ]
   },
   {
@@ -202,7 +201,8 @@
     "phrase": "right, this could totally shape the league",
     "keyword": "NBA league evolution",
     "images": [
-      "images/p23_img1.jpg"
+      "images/p23_img1.jpg",
+      "images/p23_img2.jpg"
     ]
   },
   {
