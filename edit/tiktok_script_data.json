@@ -155,9 +155,10 @@
   {
     "id": "p18",
     "phrase": "easily, and those three teams",
-    "keyword": "basketball players",
+    "keyword": "NBA teams",
     "images": [
-      "images/p18_img1.jpg"
+      "images/p18_img1.jpg",
+      "images/p18_img2.jpg"
     ]
   },
   {
